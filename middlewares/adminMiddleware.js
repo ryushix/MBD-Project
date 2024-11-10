@@ -1,30 +1,24 @@
-const jwt = require('jsonwebtoken');
 const { query } = require('../config/db');
 
-// Middleware untuk memastikan hanya Admin yang dapat mengakses rute ini
-const middlewareAdmin = async (req, res, next) => {
-  const token = req.header('Authorization')?.replace('Bearer ', '');
-  
-  if (!token) {
-    return res.status(401).json({ error: 'No token, authorization denied' });
-  }
-
+const adminMiddleware = async (req, res, next) => {
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    req.user = decoded; // Menyimpan informasi pengguna yang sudah terverifikasi
-    
-    // Verifikasi apakah user adalah Admin
-    const result = await query('SELECT * FROM Admin WHERE admin_id = $1', [req.user.admin_id]);
+    // Mengambil admin_id dari token yang sudah diverifikasi di authenticateToken
+    const { admin_id } = req.user; // pastikan req.user sudah diisi oleh authenticateToken
 
-    if (!result.rows.length) {
-      return res.status(403).json({ error: 'Access denied, not an admin' });
+    // Menjalankan prosedur LihatAdmin untuk memverifikasi admin
+    const result = await query('CALL LihatAdmin($1);', [admin_id]);
+
+    // Jika tidak ada hasil dari prosedur, anggap admin tidak ditemukan
+    if (!result) {
+      return res.status(403).json({ error: 'access denied.' });
     }
-    
-    next(); // Admin terverifikasi, lanjutkan ke rute berikutnya
-  } catch (err) {
-    console.error('Error:', err.message);
-    res.status(401).json({ error: 'Invalid or expired token' });
+
+    // Jika admin ditemukan, lanjut ke middleware atau route berikutnya
+    next();
+  } catch (error) {
+    console.error('Error in adminMiddleware:', error.message);
+    res.status(500).json({ error: 'access denied.' });
   }
 };
 
-module.exports = middlewareAdmin;
+module.exports = adminMiddleware;

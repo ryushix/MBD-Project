@@ -19,7 +19,6 @@
     "express": "^4.21.1",
     "express-validator": "^7.2.0",
     "jsonwebtoken": "^9.0.2",
-    "mysql2": "^3.11.4",
     "pg": "^8.13.1"
   },
   "devDependencies": {

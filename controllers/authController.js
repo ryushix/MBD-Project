@@ -1,7 +1,6 @@
 const { query } = require('../config/db');
 const jwt = require('jsonwebtoken');
 
-// Fungsi register
 const registerUser = async (req, res) => {
   const { nama, email, kata_sandi, informasi_pribadi, role } = req.body;
 
@@ -22,7 +21,6 @@ const registerUser = async (req, res) => {
   }
 };
 
-// Fungsi login
 const loginUser = async (req, res) => {
   const { email, kata_sandi, role } = req.body;
 

@@ -31,7 +31,7 @@ const adminMiddleware = async (req, res, next) => {
     next();
   } catch (error) {
     console.error('Error in adminMiddleware:', error.message);
-    res.status(403).json({ error: 'Invalid token or access denied' });
+    res.status(403).json({ error: 'Access denied, only admins are allowed' });
   }
 };
 

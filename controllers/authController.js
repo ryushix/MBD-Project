@@ -37,7 +37,15 @@ const loginUser = async (req, res) => {
       return res.status(401).json({ error: 'Invalid email or password' });
     }
 
-    const token = jwt.sign({ admin_id: user_id, role: user_role }, process.env.JWT_SECRET, { expiresIn: '1h' });
+    // Menyimpan penerima_id atau admin_id dalam token, tergantung pada role
+    let tokenPayload;
+    if (user_role === 'penerima_manfaat') {
+      tokenPayload = { penerima_id: user_id, role: user_role };
+    } else {
+      tokenPayload = { admin_id: user_id, role: user_role };
+    }
+
+    const token = jwt.sign(tokenPayload, process.env.JWT_SECRET, { expiresIn: '1h' });
 
     res.status(200).json({
       message: 'Login successful',
@@ -49,5 +57,6 @@ const loginUser = async (req, res) => {
     res.status(500).json({ error: 'Internal Server Error' });
   }
 };
+
 
 module.exports = { registerUser, loginUser };

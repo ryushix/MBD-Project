@@ -3,8 +3,8 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 const authRoutes = require('./routes/authRoutes');
 const userRoutes = require('./routes/userRoutes');
-const authenticateToken = require('./middlewares/authenticateToken');
-
+const penerimaRoutes = require('./routes/penerimaRoutes');
+const adminMiddleware = require('./middlewares/adminMiddleware');
 const app = express();
 
 app.use(cors());
@@ -13,7 +13,9 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use('/auth', authRoutes);
 
-app.use('/admin', authenticateToken, userRoutes); // Admin route yang memerlukan autentikasi
+app.use('/admin', adminMiddleware, userRoutes); 
+
+// app.use('/penerima', authenticateToken, penerimaRoutes);
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {

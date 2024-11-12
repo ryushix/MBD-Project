@@ -8,16 +8,16 @@ const {
   perbaruiDonatur,
   hapusDonatur 
 } = require('../controllers/userController');
-const middlewareAdmin = require('../middlewares/adminMiddleware');
+const adminMiddleware = require('../middlewares/adminMiddleware');
 
 // Rute untuk melihat dan mengelola Donatur
-router.get('/donatur', middlewareAdmin, lihatDonatur);
-router.put('/donatur', middlewareAdmin, perbaruiDonatur);
-router.delete('/donatur/:donatur_id', middlewareAdmin, hapusDonatur);
+router.get('/donatur', adminMiddleware, lihatDonatur);
+router.put('/donatur', adminMiddleware, perbaruiDonatur);
+router.delete('/donatur/:donatur_id', adminMiddleware, hapusDonatur);
 
 // Rute untuk melihat dan mengelola Penerima Manfaat
-router.get('/penerima', middlewareAdmin, lihatPenerimaManfaat);
-router.put('/penerima', middlewareAdmin, perbaruiPenerimaManfaat);
-router.delete('/penerima/:penerima_id', middlewareAdmin, hapusPenerimaManfaat);
+router.get('/penerima', adminMiddleware, lihatPenerimaManfaat);
+router.put('/penerima', adminMiddleware, perbaruiPenerimaManfaat);
+router.delete('/penerima/:penerima_id', adminMiddleware, hapusPenerimaManfaat);
 
 module.exports = router;

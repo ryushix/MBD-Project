@@ -5,6 +5,8 @@ const authRoutes = require('./routes/authRoutes');
 const userRoutes = require('./routes/userRoutes');
 const penerimaRoutes = require('./routes/penerimaRoutes');
 const adminMiddleware = require('./middlewares/adminMiddleware');
+const penerimaMiddleware = require('./middlewares/penerimaMiddleware');
+
 const app = express();
 
 app.use(cors());
@@ -15,7 +17,7 @@ app.use('/auth', authRoutes);
 
 app.use('/admin', adminMiddleware, userRoutes); 
 
-// app.use('/penerima', authenticateToken, penerimaRoutes);
+app.use('/penerima', penerimaMiddleware, penerimaRoutes);
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {

@@ -1,62 +1,66 @@
-const { query } = require('../config/db');
 const jwt = require('jsonwebtoken');
+const pool = require('../config/db');
 
 const registerUser = async (req, res) => {
-  const { nama, email, kata_sandi, informasi_pribadi, role } = req.body;
+    const { nama, email, kata_sandi, informasi_pribadi, role } = req.body;
 
-  try {
-    if (!nama || !email || !kata_sandi || !role) {
-      return res.status(400).json({ error: 'All fields are required' });
+    try {
+        const [rows] = await pool.query('CALL registerUser(?, ?, ?, ?, ?)', [
+            nama,
+            email,
+            kata_sandi,
+            informasi_pribadi,
+            role
+        ]);
+
+        if (rows[0][0].message) {
+            return res.status(201).json({ message: rows[0][0].message });
+        }
+
+        return res.status(400).json({ message: 'Terjadi kesalahan saat registrasi.' });
+    } catch (error) {
+        return res.status(400).json({ message: error.message });
     }
-
-    await query('CALL RegisterUser($1, $2, $3, $4, $5);', [nama, email, kata_sandi, informasi_pribadi, role]);
-
-    res.status(200).json({
-      message: 'User registered successfully',
-      data: { nama, email, role }
-    });
-  } catch (err) {
-    console.error('Error:', err.message);
-    res.status(500).json({ error: 'Failed to register user' });
-  }
 };
 
 const loginUser = async (req, res) => {
-  const { email, kata_sandi, role } = req.body;
+    const { email, kata_sandi } = req.body;
 
-  try {
-    if (!email || !kata_sandi || !role) {
-      return res.status(400).json({ error: 'Email, password, and role are required' });
+    try {
+        const [rows] = await pool.query('CALL loginUser(?, ?)', [email, kata_sandi]);
+
+        if (rows[0][0].message) {
+            const user = {
+                nama: rows[0][0].nama,
+                email: rows[0][0].email,
+                role: rows[0][0].role
+            };
+
+            const token = jwt.sign(
+                { email: user.email, role: user.role},
+                process.env.JWT_SECRET,
+                { expiresIn: '1h' }
+            );
+
+            res.cookie('authToken', token, {
+                maxAge: 3600000
+            });
+
+            return res.status(200).json({
+                message: rows[0][0].message,
+                user
+            });
+        }
+
+        return res.status(400).json({ message: 'login gagal.' });
+    } catch (error) {
+        return res.status(400).json({ message: error.message });
     }
-
-    const result = await query('CALL LoginUser($1, $2, $3, $4, $5, $6);', [role, email, kata_sandi, null, null, null]);
-
-    const { user_id, user_name, user_role } = result.rows[0];
-
-    if (!user_id) {
-      return res.status(401).json({ error: 'Invalid email or password' });
-    }
-
-    // Menyimpan penerima_id atau admin_id dalam token, tergantung pada role
-    let tokenPayload;
-    if (user_role === 'penerima_manfaat') {
-      tokenPayload = { penerima_id: user_id, role: user_role };
-    } else {
-      tokenPayload = { admin_id: user_id, role: user_role };
-    }
-
-    const token = jwt.sign(tokenPayload, process.env.JWT_SECRET, { expiresIn: '1h' });
-
-    res.status(200).json({
-      message: 'Login successful',
-      token,
-      user: { user_id, user_name, user_role, email }
-    });
-  } catch (err) {
-    console.error('Error:', err.message);
-    res.status(500).json({ error: 'Internal Server Error' });
-  }
 };
 
+const logoutUser = (req, res) => {
+    res.clearCookie('authToken');
+    return res.status(200).json({ message: 'logout berhasil.' });
+};
 
-module.exports = { registerUser, loginUser };
+module.exports = { registerUser, loginUser, logoutUser };

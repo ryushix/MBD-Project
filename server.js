@@ -1,25 +1,16 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-const cors = require('cors');
-const authRoutes = require('./routes/authRoutes');
-const userRoutes = require('./routes/userRoutes');
-const penerimaRoutes = require('./routes/penerimaRoutes');
-const adminMiddleware = require('./middlewares/adminMiddleware');
-const penerimaMiddleware = require('./middlewares/penerimaMiddleware');
+const cookieParser = require('cookie-parser');
+const routes = require('./routes/userRoutes');
 
 const app = express();
 
-app.use(cors());
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(cookieParser());
 
-app.use('/auth', authRoutes);
+app.use('/', routes);
 
-app.use('/admin', adminMiddleware, userRoutes); 
-
-app.use('/penerima', penerimaMiddleware, penerimaRoutes);
-
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
+const port = 3000;
+app.listen(port, () => {
+    console.log(`Server running on port ${port}`);
 });

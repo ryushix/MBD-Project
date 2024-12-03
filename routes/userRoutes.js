@@ -1,23 +1,26 @@
 const express = require('express');
+const { registerUser, loginUser, logoutUser } = require('../controllers/authController');
+const { getUsers, editUser, deleteUser, searchUsersByName } = require('../controllers/adminController');
+const authMiddleware = require('../middlewares/authMiddleware');
+
 const router = express.Router();
-const { 
-  lihatDonatur,
-  lihatPenerimaManfaat,
-  perbaruiPenerimaManfaat,
-  hapusPenerimaManfaat,
-  perbaruiDonatur,
-  hapusDonatur 
-} = require('../controllers/userController');
-const adminMiddleware = require('../middlewares/adminMiddleware');
 
-// Rute untuk melihat dan mengelola Donatur
-router.get('/donatur', adminMiddleware, lihatDonatur);
-router.put('/donatur', adminMiddleware, perbaruiDonatur);
-router.delete('/donatur/:donatur_id', adminMiddleware, hapusDonatur);
+router.post('/register', registerUser);
+router.post('/logout', logoutUser);
+router.post('/login', loginUser);
 
-// Rute untuk melihat dan mengelola Penerima Manfaat
-router.get('/penerima', adminMiddleware, lihatPenerimaManfaat);
-router.put('/penerima', adminMiddleware, perbaruiPenerimaManfaat);
-router.delete('/penerima/:penerima_id', adminMiddleware, hapusPenerimaManfaat);
+// Hanya Admin
+router.get('/admin/get-users', authMiddleware(['admin']), getUsers);
+router.get('/admin/search-users', authMiddleware(['admin']), searchUsersByName);
+router.put('/admin/edit-user', authMiddleware(['admin']), editUser);
+router.delete('/admin/delete-user', authMiddleware(['admin']), deleteUser);
+
+router.get('/donatur', authMiddleware(['donatur']), (req, res) => {
+    res.status(200).json({ message: 'halo donatur!' });
+});
+
+router.get('/penerima-manfaat', authMiddleware(['penerima_manfaat']), (req, res) => {
+    res.status(200).json({ message: 'halo penerima manfaat!' });
+});
 
 module.exports = router;

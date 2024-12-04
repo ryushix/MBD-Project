@@ -1,7 +1,7 @@
 const express = require('express');
 const { registerUser, loginUser, logoutUser, getPersonalData, getDonationPrograms, getTotalDonationProgram } = require('../controllers/usersController');
 const { getUsers, searchUsersByName, editUser, deleteUser, getAllRequests, updateRequestStatus, addDonationProgram } = require('../controllers/adminController');
-const { getPenerimaManfaatById, donate } = require('../controllers/donaturController');
+const { getPenerimaManfaatById, donate, getTotalDonationDonatur, getDonationHistory } = require('../controllers/donaturController');
 const { requestAssistance, getRequestStatus } = require('../controllers/penerimaController');
 const authMiddleware = require('../middlewares/authMiddleware');
 
@@ -26,6 +26,8 @@ router.post('/admin/add-donation-program', authMiddleware(['admin']), addDonatio
 // Hanya Donatur
 router.get('/donatur/get-penerima/:penerima_id', authMiddleware(['donatur']), getPenerimaManfaatById);
 router.post('/donatur/donate', authMiddleware(['donatur']), donate);
+router.get('/donatur/total-donate', authMiddleware(['donatur']), getTotalDonationDonatur);
+router.get('/donatur/donation-history', authMiddleware(['donatur']), getDonationHistory);
 
 // Hanya Penerima Manfaat
 router.post('/penerima-manfaat/request-assistance', authMiddleware(['penerima_manfaat']), requestAssistance);

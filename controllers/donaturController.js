@@ -32,4 +32,50 @@ const donate = async (req, res) => {
     }
 };
 
-module.exports = { getPenerimaManfaatById, donate };
+const getDonationHistory = async (req, res) => {
+    const donaturEmail = req.user.email; // Email diambil dari token
+
+    try {
+        const [rows] = await pool.query('CALL getDonationHistory(?)', [donaturEmail]);
+
+        if (rows[0].length === 0) {
+            return res.status(404).json({
+                message: 'Riwayat donasi tidak ditemukan atau donatur belum melakukan donasi.',
+            });
+        }
+
+        return res.status(200).json({
+            message: 'Riwayat donasi berhasil diambil.',
+            data: rows[0],
+        });
+    } catch (error) {
+        return res.status(400).json({
+            message: error.message,
+        });
+    }
+};
+
+const getTotalDonationDonatur = async (req, res) => {
+    const donaturEmail = req.user.email;
+
+    try {
+        const [rows] = await pool.query('CALL getTotalDonationDonatur(?)', [donaturEmail]);
+
+        if (rows[0].length === 0) {
+            return res.status(404).json({
+                message: 'Donatur tidak ditemukan atau belum memiliki donasi.',
+            });
+        }
+
+        return res.status(200).json({
+            message: 'Total donasi berhasil diambil.',
+            data: rows[0][0],
+        });
+    } catch (error) {
+        return res.status(400).json({
+            message: error.message,
+        });
+    }
+};
+
+module.exports = { getPenerimaManfaatById, donate, getDonationHistory, getTotalDonationDonatur };

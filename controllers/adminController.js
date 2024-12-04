@@ -52,4 +52,36 @@ const deleteUser = async (req, res) => {
     }
 };
 
-module.exports = { getUsers, searchUsersByName, editUser, deleteUser };
+const getAllRequests = async (req, res) => {
+    try {
+        const [rows] = await pool.query('CALL getAllRequests()');
+
+        return res.status(200).json({
+            message: 'Data permintaan bantuan berhasil diambil.',
+            data: rows[0]
+        });
+    } catch (error) {
+        return res.status(400).json({ message: error.message });
+    }
+};
+
+const updateRequestStatus = async (req, res) => {
+    const { permintaan_id, status_permohonan } = req.body;
+
+    const validStatuses = ['pending', 'approved', 'rejected'];
+    if (!validStatuses.includes(status_permohonan)) {
+        return res.status(400).json({ message: 'Status permohonan tidak valid.' });
+    }
+
+    try {
+        await pool.query('CALL updateRequestStatus(?, ?)', [permintaan_id, status_permohonan]);
+
+        return res.status(200).json({
+            message: 'Status permintaan bantuan berhasil diperbarui.'
+        });
+    } catch (error) {
+        return res.status(400).json({ message: error.message });
+    }
+};
+
+module.exports = { getUsers, searchUsersByName, editUser, deleteUser, getAllRequests, updateRequestStatus };

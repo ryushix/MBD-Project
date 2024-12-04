@@ -63,4 +63,29 @@ const logoutUser = (req, res) => {
     return res.status(200).json({ message: 'logout berhasil.' });
 };
 
-module.exports = { registerUser, loginUser, logoutUser };
+const getPersonalData = async (req, res) => {
+    try {
+        const { email } = req.user;
+
+        const [rows] = await pool.query('CALL getPersonalData(?)', [email]);
+
+        if (rows[0].length === 0) {
+            return res.status(404).json({
+                error: true,
+                message: 'Data pengguna tidak ditemukan.'
+            });
+        }
+
+        return res.status(200).json({
+            message: 'Data diri berhasil diambil.',
+            data: rows[0][0]
+        });
+    } catch (error) {
+        return res.status(400).json({
+            error: true,
+            message: error.message || 'Terjadi kesalahan saat mengambil data diri.'
+        });
+    }
+};
+
+module.exports = { registerUser, loginUser, logoutUser, getPersonalData };

@@ -84,18 +84,6 @@ const updateRequestStatus = async (req, res) => {
     }
 };
 
-const getDonationPrograms = async (req, res) => {
-    try {
-        const [rows] = await pool.query('CALL getDonationPrograms()');
-        return res.status(200).json({
-            message: 'Data program donasi berhasil diambil.',
-            data: rows[0]
-        });
-    } catch (error) {
-        return res.status(400).json({ message: error.message });
-    }
-};
-
 const addDonationProgram = async (req, res) => {
     const { penerima_id, nama_program, deskripsi_program, tanggal_mulai, tanggal_berakhir } = req.body;
 
@@ -123,5 +111,5 @@ module.exports = {
     deleteUser, 
     getAllRequests, 
     updateRequestStatus, 
-    getDonationPrograms,
-    addDonationProgram };
+    addDonationProgram 
+};

@@ -88,8 +88,45 @@ const getPersonalData = async (req, res) => {
     }
 };
 
+const getDonationPrograms = async (req, res) => {
+    try {
+        const [rows] = await pool.query('CALL getDonationPrograms()');
+        return res.status(200).json({
+            message: 'Data program donasi berhasil diambil.',
+            data: rows[0]
+        });
+    } catch (error) {
+        return res.status(400).json({ message: error.message });
+    }
+};
+
+const getTotalDonationProgram = async (req, res) => {
+    const { program_id } = req.params;
+
+    if (!program_id) {
+        return res.status(400).json({
+            message: 'Parameter program_id diperlukan.',
+        });
+    }
+    try {
+        const [rows] = await pool.query('CALL getTotalDonationProgram(?)', [program_id]);
+
+        return res.status(200).json({
+            message: 'Data program donasi berhasil diambil.',
+            data: rows[0],
+        });
+    } catch (error) {
+        return res.status(400).json({
+            message: error.message,
+        });
+    }
+};
+
 module.exports = { 
     registerUser, 
     loginUser, 
     logoutUser, 
-    getPersonalData };
+    getPersonalData,
+    getDonationPrograms,
+    getTotalDonationProgram
+};

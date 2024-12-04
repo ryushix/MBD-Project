@@ -37,4 +37,6 @@ const getRequestStatus = async (req, res) => {
     }
 };
 
-module.exports = { requestAssistance, getRequestStatus };
+module.exports = { 
+    requestAssistance, 
+    getRequestStatus };

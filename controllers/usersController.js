@@ -88,4 +88,8 @@ const getPersonalData = async (req, res) => {
     }
 };
 
-module.exports = { registerUser, loginUser, logoutUser, getPersonalData };
+module.exports = { 
+    registerUser, 
+    loginUser, 
+    logoutUser, 
+    getPersonalData };

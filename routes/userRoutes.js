@@ -1,6 +1,6 @@
 const express = require('express');
 const { registerUser, loginUser, logoutUser, getPersonalData } = require('../controllers/usersController');
-const { getUsers, searchUsersByName, editUser, deleteUser, getAllRequests, updateRequestStatus } = require('../controllers/adminController');
+const { getUsers, searchUsersByName, editUser, deleteUser, getAllRequests, updateRequestStatus, getDonationPrograms, addDonationProgram } = require('../controllers/adminController');
 const { requestAssistance, getRequestStatus } = require('../controllers/penerimaController');
 const authMiddleware = require('../middlewares/authMiddleware');
 
@@ -18,6 +18,8 @@ router.put('/admin/edit-user', authMiddleware(['admin']), editUser);
 router.delete('/admin/delete-user', authMiddleware(['admin']), deleteUser);
 router.get('/admin/all-requests', authMiddleware(['admin']), getAllRequests);
 router.put('/admin/update-request-status', authMiddleware(['admin']), updateRequestStatus);
+router.get('/admin/donation-programs', authMiddleware(['admin']), getDonationPrograms);
+router.post('/admin/add-donation-program', authMiddleware(['admin']), addDonationProgram);
 
 router.get('/donatur', authMiddleware(['donatur']), (req, res) => {
     res.status(200).json({ message: 'halo donatur!' });

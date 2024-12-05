@@ -104,6 +104,38 @@ const addDonationProgram = async (req, res) => {
     }
 };
 
+const getDonation = async (req, res) => {
+    try {
+        const [rows] = await pool.query('CALL getDonation()');
+        return res.status(200).json({
+            message: 'Data donasi berhasil diambil.',
+            data: rows[0]
+        });
+    } catch (error) {
+        return res.status(400).json({ message: error.message });
+    }
+};
+
+const updateDonationStatus = async (req, res) => {
+    const { donation_id, status } = req.body;
+
+    // Validasi status
+    if (!['success', 'refund'].includes(status)) {
+        return res.status(400).json({ message: 'Status donasi tidak valid.' });
+    }
+
+    try {
+        await pool.query('CALL updateDonationStatus(?, ?)', [donation_id, status]);
+        return res.status(200).json({
+            message: 'Status donasi berhasil diperbarui.',
+        });
+    } catch (error) {
+        return res.status(400).json({
+            message: error.message,
+        });
+    }
+};
+
 module.exports = { 
     getUsers, 
     searchUsersByName, 
@@ -111,5 +143,7 @@ module.exports = {
     deleteUser, 
     getAllRequests, 
     updateRequestStatus, 
-    addDonationProgram 
+    addDonationProgram,
+    getDonation,
+    updateDonationStatus
 };

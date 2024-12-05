@@ -1,6 +1,6 @@
 const express = require('express');
 const { registerUser, loginUser, logoutUser, getPersonalData, getDonationPrograms, getTotalDonationProgram } = require('../controllers/usersController');
-const { getUsers, searchUsersByName, editUser, deleteUser, getAllRequests, updateRequestStatus, addDonationProgram } = require('../controllers/adminController');
+const { getUsers, searchUsersByName, editUser, deleteUser, getAllRequests, updateRequestStatus, addDonationProgram, getDonation, updateDonationStatus } = require('../controllers/adminController');
 const { getPenerimaManfaatById, donate, getTotalDonationDonatur, getDonationHistory } = require('../controllers/donaturController');
 const { requestAssistance, getRequestStatus } = require('../controllers/penerimaController');
 const authMiddleware = require('../middlewares/authMiddleware');
@@ -15,16 +15,18 @@ router.get('/donation-programs', authMiddleware(['admin', 'donatur', 'penerima_m
 router.get('/total-donation-program/:program_id', authMiddleware(['admin', 'donatur', 'penerima_manfaat']), getTotalDonationProgram);
 
 // Hanya Admin
-router.get('/admin/get-users', authMiddleware(['admin']), getUsers);
-router.get('/admin/search-users', authMiddleware(['admin']), searchUsersByName);
-router.put('/admin/edit-user', authMiddleware(['admin']), editUser);
-router.delete('/admin/delete-user', authMiddleware(['admin']), deleteUser);
+router.get('/admin/users', authMiddleware(['admin']), getUsers);
+router.get('/admin/search', authMiddleware(['admin']), searchUsersByName);
+router.put('/admin/user', authMiddleware(['admin']), editUser);
+router.delete('/admin/user', authMiddleware(['admin']), deleteUser);
 router.get('/admin/all-requests', authMiddleware(['admin']), getAllRequests);
-router.put('/admin/update-request-status', authMiddleware(['admin']), updateRequestStatus);
-router.post('/admin/add-donation-program', authMiddleware(['admin']), addDonationProgram);
+router.put('/admin/request-status', authMiddleware(['admin']), updateRequestStatus);
+router.post('/admin/donation-program', authMiddleware(['admin']), addDonationProgram);
+router.get('/admin/donation', authMiddleware(['admin']), getDonation);
+router.put('/admin/donation-status', authMiddleware(['admin']), updateDonationStatus);
 
 // Hanya Donatur
-router.get('/donatur/get-penerima/:penerima_id', authMiddleware(['donatur']), getPenerimaManfaatById);
+router.get('/donatur/check-recipient/:penerima_id', authMiddleware(['donatur']), getPenerimaManfaatById);
 router.post('/donatur/donate', authMiddleware(['donatur']), donate);
 router.get('/donatur/total-donate', authMiddleware(['donatur']), getTotalDonationDonatur);
 router.get('/donatur/donation-history', authMiddleware(['donatur']), getDonationHistory);
